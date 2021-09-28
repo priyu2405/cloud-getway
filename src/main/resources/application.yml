@@ -1,0 +1,43 @@
+server:
+  port: 8082
+  
+spring:
+  application:
+    name: CLOUD-GATEWAY
+  cloud:
+    gateway:
+      routes:
+      - id: RATE-MANAGEMENT-SYSTEM
+        uri: lb://RATE-MANAGEMENT-SYSTEM
+        predicates:
+        - Path=/ratemanagementsystem/**
+        filters:
+        - name: CircuitBreaker          
+          args:
+            name: RATE-MANAGEMENT-SYSTEM
+            fallbackuri: forward:/serviceFallBack
+          
+            
+hystrix:  
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 10000
+                  
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8085/eureka/
+  instance:
+    hostname: localhost 
+    
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
